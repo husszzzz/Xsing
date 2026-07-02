@@ -18,7 +18,7 @@ struct SettingsView: View {
         animation: .snappy
     ) private var _certificates: FetchedResults<CertificatePair>
     
-    // متغير للتحكم في ظهور رسالة "حول المتجر"
+    // متغير للتحكم في ظهور رسالة "حول المن"
     @State private var showAboutMessage = false
     
     private var selectedCertificate: CertificatePair? {
