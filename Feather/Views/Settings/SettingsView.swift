@@ -18,7 +18,7 @@ struct SettingsView: View {
         animation: .snappy
     ) private var _certificates: FetchedResults<CertificatePair>
     
-    // متغير للتحكم في ظهور رسالة "حول المن"
+    // متغير للتحكم في ظهور رسالة "حول المتجر"
     @State private var showAboutMessage = false
     
     private var selectedCertificate: CertificatePair? {
@@ -46,7 +46,7 @@ struct SettingsView: View {
                 // 2. قسم حول وقناة التليجرام
                 _feedback()
                 
-                // 3. المظهر (تم حذف أيقونة التطبيق حسب الطلب)
+                // 3. المظهر
                 Section {
                     NavigationLink(destination: AppearanceView()) {
                         Label(.localized("Appearance"), systemImage: "paintbrush")
@@ -121,9 +121,16 @@ extension SettingsView {
                 StoreAboutMessageView()
             }
             
-            // زر قناة التليجرام الخاص بالمتجر
-            Button("قناة التليجرام", systemImage: "paperplane.circle") {
-                UIApplication.open("https://t.me/hassanyIPA")
+            // زر قناة التليجرام الرسمي والآمن
+            Button(action: {
+                if let url = URL(string: "https://t.me/hassanyIPA") {
+                    UIApplication.shared.open(url)
+                }
+            }) {
+                HStack {
+                    Label("قناة التليجرام", systemImage: "paperplane.circle")
+                    Spacer()
+                }
             }
         } header: {
             Text("حول")
@@ -133,11 +140,26 @@ extension SettingsView {
     @ViewBuilder
     private func _directories() -> some View {
         NBSection(.localized("Misc")) {
-            Button(.localized("Open Documents"), systemImage: "folder") {
-                UIApplication.open(URL.documentsDirectory.toSharedDocumentsURL()!.absoluteString) // تعديل طفيف لضمان عمل الرابط
+            Button(action: {
+                if let url = URL.documentsDirectory.toSharedDocumentsURL() {
+                    UIApplication.shared.open(url)
+                }
+            }) {
+                HStack {
+                    Label(.localized("Open Documents"), systemImage: "folder")
+                    Spacer()
+                }
             }
-            Button(.localized("Open Archives"), systemImage: "folder") {
-                UIApplication.open(FileManager.default.archives.toSharedDocumentsURL()!.absoluteString)
+            
+            Button(action: {
+                if let url = FileManager.default.archives.toSharedDocumentsURL() {
+                    UIApplication.shared.open(url)
+                }
+            }) {
+                HStack {
+                    Label(.localized("Open Archives"), systemImage: "folder")
+                    Spacer()
+                }
             }
         } footer: {
             Text(.localized("All of Ksign files except certificates are contained in the documents directory, here are some quick links to these."))
@@ -150,7 +172,6 @@ extension SettingsView {
 // 1. واجهة البانر المتحرك
 struct StoreBannerView: View {
     @State private var currentIndex = 0
-    // مؤقت لتغيير الصورة كل 4 ثواني
     private let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -166,9 +187,11 @@ struct StoreBannerView: View {
             }
             .tag(0)
             
-            // الصورة الثانية (الدعم الفني قابلة للضغط)
+            // الصورة الثانية (الدعم الفني قابلة للضغط بشكل رسمي)
             Button(action: {
-                UIApplication.open("https://t.me/OM_G9")
+                if let url = URL(string: "https://t.me/OM_G9") {
+                    UIApplication.shared.open(url)
+                }
             }) {
                 AsyncImage(url: URL(string: "https://up6.cc/2026/07/178299412751421.png")) { phase in
                     if let image = phase.image {
@@ -233,7 +256,6 @@ struct StoreAboutMessageView: View {
                     Spacer()
                 }
                 .padding(20)
-                // إجبار التنسيق من اليمين لليسار لضمان ظهور النص العربي بشكل مثالي
                 .environment(\.layoutDirection, .rightToLeft)
             }
             .navigationTitle("حول المتجر")
@@ -249,7 +271,6 @@ struct StoreAboutMessageView: View {
         }
     }
     
-    // دالة مساعدة لتصميم شكل النقاط (Bullet Points)
     private func BulletPointRow(text: String) -> some View {
         HStack(alignment: .top, spacing: 8) {
             Text(text)
